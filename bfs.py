@@ -1,51 +1,33 @@
 from collections import deque
 
-def bfs(adj, src):
-    V = len(adj)
-    visited = [False] * V
-    result = []
+def bfs(graph, S):
+    n = len(graph)
+    visited = [False] * n
+    Q = deque()
 
-    q = deque([src])
-    visited[src] = True
+    visited[S] = True
+    Q.append(S)
 
-    while q:
-        u = q.popleft()
-        result.append(u)
+    while Q:
+        u = Q.popleft()
+        print(u, end=" ")
 
-        for v in adj[u]:
-            if not visited[v]:
+        for v in graph[u]:
+            if visited[v] == False:
                 visited[v] = True
-                q.append(v)
-
-    return result
+                Q.append(v)
 
 
-V = 5  
-
-
-adj = [[] for _ in range(V)]
-
-
-edges = [
-    (0, 1),
-    (0, 2),
-    (1, 3),
-    (2, 3),
-    (3, 4)
+# Graph
+graph = [
+    [1, 2],       # 0 is connected to 1, 2
+    [0, 3, 4],    # 1 is connected to 0, 3, 4
+    [0, 5],       # 2 is connected to 0, 5
+    [1],          # 3 is connected to 1
+    [1, 5],       # 4 is connected to 1, 5
+    [2, 4]        # 5 is connected to 2, 4
 ]
 
+S = 0
+bfs(graph, S)
 
-for u, v in edges:
-    adj[u].append(v)
-    adj[v].append(u)  
-
-
-src = 0 
-
-result = bfs(adj, src)
-
-print("=== Hard-Coded BFS Result ===")
-print(f"Edges in graph: {edges}")
-print(f"Starting vertex: {src}")
-print("\nBFS Traversal Path:")
-print(" -> ".join(map(str, result)))
