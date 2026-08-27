@@ -1,53 +1,33 @@
 from collections import deque
 
-def bfs(matrix, src):
-   
-    V = len(matrix)  
-    visited = [False] * V
-    result = []
+def bfs(graph, S):
+    n = len(graph)
+    visited = [False] * n
+    Q = deque()
 
-    q = deque([src])
-    visited[src] = True
+    visited[S] = True
+    Q.append(S)
 
-    while q:
-        u = q.popleft()
-        result.append(u)
-        for v in range(V):
-            
-            if matrix[u][v] == 1 and not visited[v]:
+    while Q:
+        u = Q.popleft()
+        print(u, end=" ")
+
+        for v in range(n):
+            if graph[u][v] == 1 and visited[v] == False:
                 visited[v] = True
-                q.append(v)
-
-    return result
+                Q.append(v)
 
 
-V = 5 
-
-
-matrix = [[0 for _ in range(V)] for _ in range(V)]
-
-edges = [
-    (0, 1),
-    (0, 2),
-    (1, 3),
-    (2, 3),
-    (3, 4)
+# Graph
+graph = [
+    [0, 1, 1, 0, 0, 0],
+    [1, 0, 0, 1, 1, 0],
+    [1, 0, 0, 0, 0, 1],
+    [0, 1, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 1],
+    [0, 0, 1, 0, 1, 0]
 ]
 
-for u, v in edges:
-    matrix[u][v] = 1  
-    matrix[v][u] = 1 
+S = 0
+bfs(graph, S)
 
-
-src = 0 
-
-result = bfs(matrix, src)
-
-print("=== Adjacency Matrix BFS Result ===")
-print("The Matrix looks like this:")
-for row in matrix:
-    print(row)
-
-print(f"\nStarting vertex: {src}")
-print("\nBFS Traversal Path:")
-print(" -> ".join(map(str, result)))
