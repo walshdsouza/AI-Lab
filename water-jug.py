@@ -1,62 +1,83 @@
 from collections import deque
 
 
-def water_jug():
-    jug1_capacity = 3
-    jug2_capacity = 1
-    target = 2
+def water_jug_bfs(m, n, d):
 
-    # Queue contains (jug1, jug2, path)
-    queue = deque([(0, 0, [])])
+    # If target is greater than both jug capacities
+    if d > max(m, n):
+        return -1, []
 
-    visited = set()
+    # Queue stores (jug1, jug2, steps, path)
+    queue = deque([(0, 0, 0, [(0, 0)])])
+
+    # 2D visited array
+    visited = [[False] * (n + 1) for _ in range(m + 1)]
+
+    # Mark initial state as visited
+    visited[0][0] = True
 
     while queue:
-        jug1, jug2, path = queue.popleft()
 
-        if (jug1, jug2) in visited:
-            continue
+        # Remove front element
+        jug1, jug2, steps, path = queue.popleft()
 
-        visited.add((jug1, jug2))
+        # Check if target is reached
+        if jug1 == d or jug2 == d:
+            return steps, path
 
-        # Check target
-        if jug1 == target or jug2 == target:
-            return path + [(jug1, jug2)]
+        # Generate all possible states
 
-        # Possible next states
-        next_states = [
-            (jug1_capacity, jug2),  # Fill jug1
-            (jug1, jug2_capacity),  # Fill jug2
-            (0, jug2),              # Empty jug1
-            (jug1, 0),              # Empty jug2
+        states = [
+            (m, jug2),       # Fill Jug 1
+            (jug1, n),       # Fill Jug 2
+            (0, jug2),       # Empty Jug 1
+            (jug1, 0),       # Empty Jug 2
 
-            # Pour jug1 -> jug2
+            # Pour Jug 1 -> Jug 2
             (
-                max(0, jug1 - (jug2_capacity - jug2)),
-                min(jug2_capacity, jug1 + jug2)
+                jug1 - min(jug1, n - jug2),
+                jug2 + min(jug1, n - jug2)
             ),
 
-            # Pour jug2 -> jug1
+            # Pour Jug 2 -> Jug 1
             (
-                min(jug1_capacity, jug1 + jug2),
-                max(0, jug2 - (jug1_capacity - jug1))
+                jug1 + min(jug2, m - jug1),
+                jug2 - min(jug2, m - jug1)
             )
         ]
 
-        for state in next_states:
-            if state not in visited:
+        # Process generated states
+        for new_jug1, new_jug2 in states:
+
+            if not visited[new_jug1][new_jug2]:
+
+                # Mark as visited
+                visited[new_jug1][new_jug2] = True
+
+                # Add new state and path to queue
+                new_path = path + [(new_jug1, new_jug2)]
+
                 queue.append(
-                    (state[0], state[1], path + [(jug1, jug2)])
+                    (new_jug1, new_jug2, steps + 1, new_path)
                 )
 
-    return None
+    return -1, []
 
 
-result = water_jug()
+# Example
+m = 3
+n = 1
+d = 2
 
-if result:
-    print("Path to reach the target amount of water:")
-    for step in result:
-        print(step)
+steps, path = water_jug_bfs(m, n, d)
+
+if steps != -1:
+
+    print("Minimum number of steps:", steps)
+    print("\nPath to reach the goal state:")
+
+    for i, state in enumerate(path):
+        print("Step", i, ":", state)
+
 else:
-    print("No solution found.")
+    print("No solution")
