@@ -1,61 +1,72 @@
-def dfs(adj, src):
-    
-    V = len(adj)
-    visited = [False] * V
-    result = []
-    stack = [src]
-    
-    while stack:
+def dfs(adj, n, start):
+    visited = [False] * n
+    stack = []
+    stack.append(start)
+
+    print("DFS Traversal:", end=" ")
+
+    while len(stack) != 0:
         u = stack.pop()
-        
-        if not visited[u]:
+
+        if visited[u] == False:
             visited[u] = True
-            result.append(u)
-            
-            
+            print(u, end=" ")
+
             for v in reversed(adj[u]):
-                if not visited[v]:
+                if visited[v] == False:
                     stack.append(v)
-                    
-    return result
-
-def count(adj, src):
-    
-    return len(adj[src])
 
 
+def check_path(adj, n, v1, v2):
+    visited = [False] * n
+    stack = []
+    stack.append(v1)
 
-V = 5  
-adj = [[] for _ in range(V)]
+    while len(stack) != 0:
+        u = stack.pop()
 
- 
-edges = [
-    (0, 1),
-    (0, 2),
-    (1, 3),
-    (2, 3),
-    (3, 4)
-]
+        if visited[u] == False:
+            visited[u] = True
 
+            if u == v2:
+                return True
 
-for u, v in edges:
-    adj[u].append(v)
-    adj[v].append(u)  
+            for v in adj[u]:
+                if visited[v] == False:
+                    stack.append(v)
 
-print(f"Graph Edges: {edges}\n")
-
-start_vertex = 0
-traversal_order = dfs(adj, start_vertex)
-print(f"DFS Traversal Path (Starting at {start_vertex}): {' -> '.join(map(str, traversal_order))}")
+    return False
 
 
-print("\n--- Connection Checker ---")
-node_to_check = int(input(f"Enter the vertex to check connections (0-{V-1}): "))
+def count_neighbours(adj, node):
+    count = len(adj[node])
+    return count
 
 
-if 0 <= node_to_check < V:
-    direct_count = count(adj, node_to_check)
-    print(f"Node {node_to_check} is connected to {direct_count} vertices.")
-    print(f"These neighbors are: {adj[node_to_check]}")
+n = int(input("Enter number of vertices: "))
+
+adj = []
+
+for i in range(n):
+    print("Enter adjacent vertices of vertex", i, "separated by space:")
+    vertices = list(map(int, input().split()))
+    adj.append(vertices)
+
+
+start = int(input("\nEnter starting vertex for DFS: "))
+dfs(adj, n, start)
+
+
+v1 = int(input("\n\nEnter first vertex: "))
+v2 = int(input("Enter second vertex: "))
+
+if check_path(adj, n, v1, v2):
+    print("Path exists between", v1, "and", v2)
 else:
-    print("Invalid vertex! Please enter a number within the graph's range.")
+    print("No path exists between", v1, "and", v2)
+
+
+node = int(input("\nEnter vertex to count neighbouring vertices: "))
+count = count_neighbours(adj, node)
+
+print("Number of vertices connected to", node, "=", count)
