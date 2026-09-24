@@ -1,6 +1,6 @@
 import heapq
 
-def best_first_search_adj_list(graph, heuristics, start, goal):
+def best(graph, heuristics, start, goal):
     
     visited = set()
     
@@ -57,4 +57,4 @@ heuristics = {
 }
 
 
-best_first_search_adj_list(graph, heuristics, start='S', goal='G')
+best(graph, heuristics, start='S', goal='G')
